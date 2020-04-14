@@ -38,8 +38,8 @@
     ####################################################
   - platform: darksky
     api_key: !secret darksky_key
-    latitude: 49.253994
-    longitude: 8.101014   
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude  
     forecast:
       - 0
     hourly_forecast:

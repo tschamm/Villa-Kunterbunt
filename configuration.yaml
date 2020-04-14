@@ -168,8 +168,7 @@ hue:
 camera:
   - platform: ffmpeg
     name: Front Door Camera
-    input: https://stream-eu1-charlie.dropcam.com:443/nexus_aac/c1bc0638f6434259afed545083e1a3c9/chunklist_w1943104117.m3u8?public=vWmW0WrvIK
-
+    input: !secret cam_url
 
 hacs:
   token: !secret hacs_token
