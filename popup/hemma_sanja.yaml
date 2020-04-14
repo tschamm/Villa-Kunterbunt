@@ -1,0 +1,134 @@
+              action: call-service
+              service: browser_mod.popup
+              service_data:
+                card:
+                  cards:
+                    - entities:
+                        - entity: person.sanja
+                          secondary_info: last-changed
+                      style: |
+                        ha-card {
+                          margin-right: 0.55em;
+                          margin-left: 0.55em;
+                        }
+                      type: entities
+                    - entities:
+                        - entity: person.sanja
+                      hours_to_show: 24
+                      refresh_interval: 0
+                      style: |
+                        ha-card {
+                          margin-top: -1.5em;
+                          margin-left: 0.5em;
+                        }
+                      type: history-graph
+                    - entities:
+                        - entity: device_tracker.sanja
+                          name: Router
+                          icon: 'mdi:router-wireless'
+                        - entity: device_tracker.sanja_bluetooth
+                          name: Bluetooth
+                          icon: 'mdi:bluetooth'
+                      style: |
+                        ha-card {
+                          margin-top: -2.8em;
+                          margin-right: 0.55em;
+                        }
+                      type: entities
+                    - entities:
+                        - entity: sensor.printer_status_template
+                          name: Status
+                          icon: 'mdi:printer'
+                        - entity: sensor.hp_printer_inkcartridge_black
+                          title: Svart
+                          icon: 'mdi:water-outline'
+                          icon_position: left
+                          width: 45%
+                          height: 2em
+                          max: 100
+                          min: 0
+                          severity:
+                            - color: '#303435'
+                              value: 90
+                            - color: '#6d2525'
+                              value: 100
+                          style: &bar-card-style |
+                            ha-card {
+                              box-shadow: none;
+                              margin: 12px 0px 16px 0px;
+                            }
+                            ha-icon {
+                              color: #9e9e9e;
+                              filter: none;
+                            }
+                            bar-card-title {
+                              color: #e0e1e1;
+                              margin-left: 1em;
+                            }
+                            bar-card-bar, bar-card-chargebar, bar-card-indicatorbar, 
+                            bar-card-indicatorcontainer, bar-card-indicator {
+                              border-radius: 0.3em;
+                            }
+                            bar-card-value {
+                              color: #e0e1e1;
+                              text-shadow: none;
+                              font-size: 0.95em;
+                              font-weight: 400;
+                            }
+                            bar-card-background {
+                              background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(17,18,18,0.3) 75%);
+                              box-shadow: inset 0 0 25px #00000030;
+                              border-radius: 0.3em;
+                            }
+                            bar-card-backgroundbar {
+                              background: none;
+                            }
+                          tap_action: service
+                          service_options:
+                            domain: homeassistant
+                            service: update_entity
+                            data:
+                              entity_id: sensor.hp_printer_inkcartridge_black
+                          type: custom:bar-card
+                        - entity: sensor.hp_printer_inkcartridge_cyanmagentayellow
+                          title: Färg
+                          icon: 'mdi:water'
+                          icon_position: left
+                          width: 45%
+                          height: 2em
+                          max: 100
+                          min: 0
+                          severity:
+                            - color: '#303435'
+                              value: 90
+                            - color: '#6d2525'
+                              value: 100
+                          style: *bar-card-style
+                          tap_action: service
+                          service_options:
+                            domain: homeassistant
+                            service: update_entity
+                            data:
+                              entity_id: sensor.hp_printer_inkcartridge_cyanmagentayellow
+                          type: custom:bar-card
+                      style: |
+                        ha-card {
+                          margin-top: -1.4em;
+                          margin-right: 0.55em;
+                        }
+                        .card-header {
+                          margin-left: 0.45em;
+                          padding-bottom: 0.7em;
+                          font-size: 1.5em;
+                        }
+                      title: "Skrivare"
+                      show_header_toggle: false
+                      type: entities
+                  type: custom:stack-in-card
+                deviceID:
+                  - this
+                style:
+                  '--ha-card-border-radius': 0vw 0vw 0.8vw 0.8vw
+                  border-radius: 0.8vw
+                  opacity: 0.9
+                title: Sanja

@@ -1,0 +1,216 @@
+
+    ####################################################
+    #                                                  #
+    #                     SENSORS                      #
+    #                                                  #
+    ####################################################
+
+  - platform: version
+    name: hass_version_installed
+
+  - platform: version
+    name: hass_version_latest
+    source: docker
+
+  - platform: filesize
+    file_paths:
+      - /config/home-assistant_v2.db
+      - /config/home-assistant.log
+
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /
+      - type: memory_use_percent
+      - type: processor_use
+      - type: last_boot
+
+  - platform: time_date
+    display_options:
+      ['time', 'date']
+
+
+  - platform: dnsip
+    ####################################################
+    #                                                  #
+    #                     Wetter                       #
+    #                                                  #
+    ####################################################
+  - platform: darksky
+    api_key: !secret darksky_key
+    latitude: 49.253994
+    longitude: 8.101014   
+    forecast:
+      - 0
+    hourly_forecast:
+      - 0
+    monitored_conditions:
+     ['precip_probability', 'temperature', 'apparent_temperature', 'icon', 'summary', 'cloud_cover', 'dew_point', 'uv_index', 'alerts', 'moon_phase']
+
+  - platform: buienradar
+    name: 'buienradar'
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude
+    timeframe: 120
+    monitored_conditions:
+      - stationname
+      - barometerfc
+      - barometerfcname
+      - conditioncode
+      - condition
+      - conditiondetailed
+      - conditionexact
+      - conditionexact_1d
+      - symbol
+      - feeltemperature
+      - temperature
+      - groundtemperature
+      - windspeed
+      - windforce
+      - windgust
+      - rain_1d 
+      - windspeed_1d 
+      - rainchance_1d
+      - precipitation
+      - irradiance
+      - precipitation_forecast_average
+      - precipitation_forecast_total
+      - rainlast24hour
+      - rainlasthour
+
+
+    ####################################################
+    #                                                  #
+    #                     TEMPLATE                     #
+    #                                                  #
+    ####################################################
+
+  - platform: template
+    sensors:
+      sidebar_active:
+        value_template: >-
+              {% set lights = [states.light.wohnzimmer, states.light.kuche, states.light.esszimmer, states.light.wc, states.light.tom, states.light.elly, 
+               states.light.schlafzimmer, states.light.bad, states.light.pc, states.light.terrasse, states.light.flur_ug, states.light.flur_og, states.light.flur_eg, states.light.bar, states.light.garten,] %}
+              {% set lights_on = lights | selectattr('state','eq','on') | list %}
+              {% set lights_name = lights | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
+
+              {% if (lights_on | length ==0 ) and (switches_on | length > 0) %} 
+              <b>{{ switches_name | regex_replace(',([^,]*)$',' und\\1') }} sind
+              an</b>
+
+              {% elif (lights_on | length ==1) and (switches_on | length == 1)
+              %} <b>{{ lights_name }} und {{switches_name }} sind an</b>
+
+              {% elif (lights_on | length ==1) and (switches_on | length > 1) %}
+              <b>{{ lights_name }}, {{ switches_name |
+              regex_replace(',([^,]*)$',' und\\1') }} sind an</b>
+
+              {% elif (lights_on | length > 1) and (switches_on | length == 1)
+              %} <b>{{ lights_on | length }} Lampen und {{ switches_name }} sind
+              an</b>
+
+              {% elif (lights_on | length > 1 ) and (switches_on | length > 1)
+              %} <b>{{ lights_on | length }} Lampen, {{ switches_name |
+              regex_replace(',([^,]*)$',' und\\1') }} sind an</b>
+
+              {% elif (lights_on | length ==1) and (switches_on | length ==0) %}
+              <b>{{ lights_name }} ist an</b>
+
+              {% elif (lights_on | length >1 ) and (switches_on | length ==0) %}
+
+
+              <b>{{ lights_on | length}} Lampen sind an</b>
+
+              {% else %} 
+              <font color='#6a7377'><b>Alle Lampen sind aus</b></font> 
+              {% endif %}
+
+
+
+      placeholder:
+        value_template: " "
+
+      hass_version_template:
+        icon_template: 'mdi:home-assistant'
+        friendly_name_template: >-
+          Installiert {{ states('sensor.hass_version_installed') }}
+        value_template: >-
+          {% if states('sensor.hass_version_installed') == states('sensor.hass_version_latest') %}
+            Latest
+          {% else %}
+            {{ states('sensor.hass_version_latest') }}
+          {% endif %}
+
+
+      printer_status_template:
+        friendly_name: Drucker
+        icon_template: 'mdi:printer'
+        value_template: >-
+          {% if is_state('sensor.hp_printer_status', 'On') %}
+            På
+          {% elif is_state('sensor.hp_printer_status', 'Scanning') %}
+            Skannar
+          {% elif is_state('sensor.hp_printer_status', 'Copying') %}
+            Kopierar
+          {% elif is_state('sensor.hp_printer_status', 'Printing') %}
+            Skriver ut
+          {% elif is_state('sensor.hp_printer_status', 'Cancelling Job') %}
+            Avbryter
+          {% elif is_state('sensor.hp_printer_status', 'Idle') %}
+            Viloläge
+          {% elif is_state('sensor.hp_printer_status', 'trayEmptyOrOpen') %}
+            Inga papper
+          {% elif is_state('sensor.hp_printer_status', 'Off') %}
+            Av
+          {% else %}
+            {{ states('sensor.hp_printer_status') }}
+          {% endif %}
+
+    ####################################################
+    #                                                  #
+    #                      DATE                        #
+    #                                                  #
+    ####################################################
+
+      dag:
+        entity_id: sensor.date
+        value_template: >
+          {% set days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"] %}
+          {{ days[now().weekday()] }}
+
+      datum:
+        value_template: >
+          {% set months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "December"] %}
+          {{ strptime(states('sensor.date'), '%Y-%m-%d').day }}
+          {{ months[now().month-1] }}
+
+
+      frank_last_changed:
+        entity_id: sensor.time
+        value_template: >-
+          {%- set time = (as_timestamp(now()) - 
+          as_timestamp(states.person.frank.last_changed)) | int %}
+          {%- set minutes = ((time % 3600) // 60) %}
+          {%- set hours = ((time % 86400) // 3600) %}
+          {%- set days = (time // 86400) %}
+          {% if time <= 60 %} 0m
+          {% elif time <= 3600 %} {{ minutes }}m
+          {% elif time <= 86400 %} {{ hours }}h
+          {% elif time > 86400 %} {{ days }}d 
+          {% endif %}
+          
+      stephanie_last_changed:
+        entity_id: sensor.time
+        value_template: >-
+          {%- set time = (as_timestamp(now()) - 
+          as_timestamp(states.person.stephanie.last_changed)) | int %}
+          {%- set minutes = ((time % 3600) // 60) %}
+          {%- set hours = ((time % 86400) // 3600) %}
+          {%- set days = (time // 86400) %}
+          {% if time <= 60 %} 0m
+          {% elif time <= 3600 %} {{ minutes }}m
+          {% elif time <= 86400 %} {{ hours }}h
+          {% elif time > 86400 %} {{ days }}d 
+          {% endif %}
+
+

@@ -1,0 +1,331 @@
+
+  - type: picture-elements
+    image: /local/overlay.svg
+    elements:
+
+      #################################################
+      #                                               #
+      #                   Flur EG                     #
+      #                                               #
+      #################################################
+          - entity: light.flur_eg
+            state_image:
+              'on': /local/btn/flur_eg_an.png
+              'off': /local/btn/flur_eg_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_1-pos
+              top: 19.5%
+              left: 23.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.flur_eg
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_1-pos
+
+          - image: /local/overlay.svg
+            style: *var_1-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.flur_eg
+            hold_action: !include popup/flur_eg.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Flur UG                     #
+      #                                               #
+      #################################################
+          - entity: light.flur_ug
+            state_image:
+              'on': /local/btn/flur_ug_an.png
+              'off': /local/btn/flur_ug_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_2-pos
+              top: 19.5%
+              left: 52.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.flur_ug
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_2-pos
+
+          - image: /local/overlay.svg
+            style: *var_2-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.flur_ug
+            hold_action: !include popup/flur_ug.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Flur OG                     #
+      #                                               #
+      #################################################
+          - entity: light.flur_og
+            state_image:
+              'on': /local/btn/flur_og_an.png
+              'off': /local/btn/flur_og_aus.png
+              unavailable: /local/btn/bar_aus.png
+            style: &var_3-pos
+              top: 52.0%
+              left: 23.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.flur_og
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_3-pos
+
+          - image: /local/overlay.svg
+            style: *var_3-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.flur_og
+            hold_action: !include popup/flur_og.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Büro                        #
+      #                                               #
+      #################################################
+          - entity: light.pc
+            state_image:
+              'on': /local/btn/pc_an.png
+              'off': /local/btn/pc_aus.png
+              unavailable: /local/btn/pc.png
+            style: &var_4-pos
+              top: 52.0%
+              left: 52.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.pc
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_4-pos
+
+          - image: /local/overlay.svg
+            style: *var_4-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.pc
+            hold_action: !include popup/pc.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Bar                         #
+      #                                               #
+      #################################################
+          - entity: light.bar
+            state_image:
+              'on': /local/btn/bar_an.png
+              'off': /local/btn/bar_aus.png
+              unavailable: /local/btn/bar_aus.png
+            style: &var_5-pos
+              top: 19.5%
+              left: 81.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.bar
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_5-pos
+
+          - image: /local/overlay.svg
+            style: *var_5-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.bar
+            hold_action: !include popup/bar.yaml
+            title: null
+            type: image
+
+
+  - type: picture-elements
+    image: /local/overlay.svg
+    elements:
+
+      #################################################
+      #                                               #
+      #                   Garten                      #
+      #                                               #
+      #################################################
+          - entity: light.garten
+            state_image:
+              'on': /local/btn/garten_an.png
+              'off': /local/btn/garten_aus.png
+              unavailable: /local/btn/garten_aus.png
+            style: &var_7-pos
+              top: 19.5%
+              left: 23.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.garten
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_7-pos
+
+          - image: /local/overlay.svg
+            style: *var_7-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.garten
+            hold_action: !include popup/garten.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Feuer                       #
+      #                                               #
+      #################################################
+          - entity: light.feuer
+            state_image:
+              'on': /local/btn/feuer_an.png
+              'off': /local/btn/feuer_aus.png
+              unavailable: /local/btn/feuer_aus.png
+            style: &var_8-pos
+              top: 19.5%
+              left: 52.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.feuer
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_8-pos
+
+          - image: /local/overlay.svg
+            style: *var_8-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.feuer
+            hold_action: !include popup/feuer.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Terrasse                    #
+      #                                               #
+      #################################################
+          - entity: light.terrasse
+            state_image:
+              'on': /local/btn/terrasse_an.png
+              'off': /local/btn/terrasse_aus.png
+              unavailable: /local/btn/bar_aus.png
+            style: &var_9-pos
+              top: 52.0%
+              left: 23.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.terrasse
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_9-pos
+
+          - image: /local/overlay.svg
+            style: *var_9-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.terrasse
+            hold_action: !include popup/terrasse.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Haustür Fluter              #
+      #                                               #
+      #################################################
+          - entity: light.eingang
+            state_image:
+              'on': /local/btn/fluter_an.png
+              'off': /local/btn/fluter_aus.png
+              unavailable: /local/btn/pc.png
+            style: &var_10-pos
+              top: 52.0%
+              left: 52.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.eingang
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_10-pos
+
+          - image: /local/overlay.svg
+            style: *var_10-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.eingang
+            hold_action: !include popup/fluter.yaml
+            title: null
+            type: image
+      #################################################
+      #                                               #
+      #                   Laser                       #
+      #                                               #
+      #################################################
+          - entity: light.bar
+            state_image:
+              'on': /local/btn/bar_an.png
+              'off': /local/btn/bar_aus.png
+              unavailable: /local/btn/bar_aus.png
+            style: &var_11-pos
+              top: 19.5%
+              left: 81.31%
+              width: 33%
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.bar
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_11-pos
+
+          - image: /local/overlay.svg
+            style: *var_11-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.bar
+            hold_action: !include popup/bar.yaml
+            title: null
+            type: image

@@ -1,0 +1,55 @@
+              action: call-service
+              service: browser_mod.popup
+              service_data:
+                card:
+                  cards:
+                    - entities:
+                        - entity: person.frank
+                          secondary_info: last-changed
+                      style: |
+                        ha-card {
+                          margin-right: 0.55em;
+                          margin-left: 0.55em;
+                        }
+                      type: entities
+                    - entities:
+                        - entity: person.frank
+                      hours_to_show: 24
+                      refresh_interval: 0
+                      style: |
+                        ha-card {
+                          margin-top: -1.5em;
+                          margin-left: 0.5em;
+                        }
+                      type: history-graph
+                    - entities:
+#                        - entity: device_tracker.frank
+#                          name: Router
+#                          icon: 'mdi:router-wireless'
+                        - entity: device_tracker.iphone
+                          name: iPhone GPS
+                          icon: 'mdi:cellphone'
+                      style: |
+                        ha-card {
+                          margin-top: -2.8em;
+                          margin-right: 0.55em;
+                        }
+                      type: entities
+                    - type: map
+                      default_zoom: 15
+                      entities:
+                        - device_tracker.iphone
+                      style: |
+                        ha-card {
+                          height: 24.9em;
+                          border-top: 1px solid #FFFFFF !important;
+                          filter: invert(1) contrast(80%) hue-rotate(250deg);
+                        }
+                  type: custom:stack-in-card
+                deviceID:
+                  - this
+                style:
+                  '--ha-card-border-radius': 0vw 0vw 0.8vw 0.8vw
+                  border-radius: 0.8vw
+                  opacity: 0.9
+                title: Frank

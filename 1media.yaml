@@ -1,0 +1,780 @@
+
+  - type: picture-elements
+    image: /local/overlay.svg
+    anchors:
+      ⚓₁: &media-text-style
+        max-width: 1px
+        font-family: SF Text
+        font-size: 1.32vw
+        font-weight: 400
+        text-rendering: optimizeLegibility
+        cursor: default
+      ⚓₂: &media-text-off
+        color: '#717777'
+        text-shadow: none
+      ⚓₃: &noninteractive
+        tap_action:
+          action: none
+        hold_action:
+          action: none
+      ⚓₄: &media-player-config
+        artwork: full-cover-fit
+        hide:
+          controls: true
+          power: true
+          volume: true
+          icon: true
+          name: true
+          info: true
+          progress: true
+          source: true
+        tap_action: none
+      ⚓₅: &overlay-fallback
+        image: /local/overlay.svg
+        style:
+          top: 132%
+          left: 50%
+          width: 110%
+          background: rgba(0,0,0,.6)
+          box-shadow: inset 0 10px 10px -10px rgba(13,18,21,.2)
+        type: image
+      ⚓₆: &overlay-blur
+        image: /local/overlay.svg
+        style:
+          top: 132%
+          left: 50%
+          width: 110%
+          backdrop-filter: blur(4px)
+        type: image
+
+    elements:
+
+      #################################################
+      #                                               #
+      #           RECENTLY DOWNLOADED PLEX            #
+      #                                               #
+      #################################################
+
+      - conditions:
+          - entity: input_select.conditional_media
+            state: Sonos
+        elements:
+
+          - type: custom:mod-card
+            style: &large-media-player-style
+              top: 50%
+              left: 50%
+              width: 100%
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --ha-card-border-radius: none
+            card:
+              entity: media_player.Sonos
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 60%), 
+                  url({{ state_attr('media_player.Sonos','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - <<: *overlay-fallback
+
+          - <<: *overlay-blur
+
+          - image: /local/media_plex.svg
+            style: &large-icon-pos
+              top: 12.85%
+              left: 13.3%
+              width: 15%
+            type: image
+
+          - prefix: Sonos
+            entity: sensor.placeholder
+            style: &large-title
+              top: 85%
+              left: 2.1%
+              color: '#e1e1e1'
+              text-shadow: 1px 1px 5px rgba(18,22,23,.9)
+              <<: *media-text-style
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.sonos_title_truncate
+            style: &large-state
+              top: 92.4%
+              left: 2.1%
+              color: '#e1e1e1'
+              text-shadow: 1px 1px 5px rgba(18,22,23,.9)
+              <<: *media-text-style
+            <<: *noninteractive
+            type: state-label
+        type: conditional
+
+      - conditions:
+          - entity: input_select.conditional_media
+            state_not: Sonos
+        elements:
+          - image: /local/overlay.svg
+            style:
+              top: 50%
+              left: 50%
+              width: 100%
+              background: rgba(116,116,116,.2)
+            type: image
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                      Nest                     #
+      #                                               #
+      #################################################
+
+      - conditions:
+          - entity: input_select.conditional_media
+            state: Nest
+        elements:
+
+          - type: custom:mod-card
+            style: *large-media-player-style
+            card:
+              entity: media_player.nest
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 60%), 
+                  url({{ state_attr('media_player.nest','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - <<: *overlay-fallback
+
+          - <<: *overlay-blur
+
+          - image: /local/media_appletv.svg
+            style: *large-icon-pos
+            type: image
+
+          - prefix: Apple Tv - Vardagsrum
+            entity: sensor.placeholder
+            style:
+              <<: *large-title
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.nest_title_truncate
+            style:
+              <<: *large-state
+            <<: *noninteractive
+            type: state-label
+
+          - conditions:
+              - entity: sensor.nest_status
+                state_not: Av
+            elements:
+              - entity: switch.media_play_pause_nest
+                state_image:
+                  'on': /local/pause.svg
+                  'off': /local/play.svg
+                style: &large-play-pause
+                  top: 50%
+                  left: 50%
+                  width: 20%
+                  filter: 'drop-shadow(0px 0px 10px #11151790)'
+                tap_action:
+                  action: toggle
+                type: image
+            type: conditional
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                     Küche                     #
+      #                                               #
+      #################################################
+
+      - conditions:
+          - entity: input_select.conditional_media
+            state: Küche
+        elements:
+
+          - type: custom:mod-card
+            style: *large-media-player-style
+            card:
+              entity: media_player.kuche
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 60%), 
+                  url({{ state_attr('media_player.kuche','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - <<: *overlay-fallback
+
+          - <<: *overlay-blur
+
+          - image: /local/media_appletv.svg
+            style: *large-icon-pos
+            type: image
+
+          - prefix: Google Küche
+            entity: sensor.placeholder
+            style:
+              <<: *large-title
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.kuche_title_truncate
+            style:
+              <<: *large-state
+            <<: *noninteractive
+            type: state-label
+
+          - conditions:
+              - entity: sensor.kuche_status
+                state_not: Av
+            elements:
+              - entity: switch.media_play_pause_kuche
+                state_image:
+                  'on': /local/pause.svg
+                  'off': /local/play.svg
+                style: *large-play-pause
+                tap_action:
+                  action: toggle
+                type: image
+            type: conditional
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                     Bad                       #
+      #                                               #
+      #################################################
+
+      - conditions:
+          - entity: input_select.conditional_media
+            state: Bad
+        elements:
+
+          - type: custom:mod-card
+            style: *large-media-player-style
+            card:
+              entity: media_player.bad
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 60%), 
+                  url({{ state_attr('media_player.bad','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - <<: *overlay-fallback
+
+          - <<: *overlay-blur
+
+          - image: /local/media_playstation.svg
+            style: *large-icon-pos
+            type: image
+
+          - prefix: Küche
+            entity: sensor.placeholder
+            style:
+              <<: *large-title
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.kuche_title_truncate
+            style:
+              <<: *large-state
+            <<: *noninteractive
+            type: state-label
+
+          - conditions:
+              - entity: media_player.kuche
+                state_not: standby
+            elements:
+              - entity: switch.media_play_pause_kuche
+                state_image:
+                  'on': /local/pause.svg
+                  'off': /local/play.svg
+                style: *large-play-pause
+                tap_action:
+                  action: toggle
+                type: image
+            type: conditional
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                   Sonos                       #
+      #                                               #
+      #################################################
+
+      - conditions:
+          - entity: input_select.conditional_media
+            state: Sonos
+        elements:
+
+          - type: custom:mod-card
+            style: *large-media-player-style
+            card:
+              entity: media_player.sonos
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 60%), 
+                  url({{ state_attr('media_player.sonos','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - <<: *overlay-fallback
+
+          - <<: *overlay-blur
+
+          - image: /local/media_googlenest.svg
+            style: *large-icon-pos
+            type: image
+
+          - prefix: Sonos
+            entity: sensor.placeholder
+            style:
+              <<: *large-title
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.sonos_title_truncate
+            style:
+              <<: *large-state
+            <<: *noninteractive
+            type: state-label
+
+          - conditions:
+              - entity: media_player.sonos
+                state_not: 'off'
+            elements:
+              - entity: switch.media_play_pause_sonos
+                state_image:
+                  'on': /local/pause.svg
+                  'off': /local/play.svg
+                style: *large-play-pause
+                tap_action:
+                  action: toggle
+                type: image
+            type: conditional
+        type: conditional
+
+      #################################################
+      #                                               #
+      #           * SMALL MEDIA CONTROLS *            #
+      #                                               #
+      #################################################
+
+  - type: picture-elements
+    image: /local/overlay.svg
+    elements:
+
+      #################################################
+      #                                               #
+      #                    SMALL Nest                 #
+      #                                               #
+      #################################################
+
+      # on
+      - conditions:
+          - entity: sensor.nest_status
+            state_not: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: &small-nest-pos
+              top: 23.8%
+              left: 23.8%
+              width: 47.86%
+            type: image
+
+          - type: custom:mod-card
+            style:
+              <<: *small-nest-pos
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --ha-card-border-radius: .64vw
+            card:
+              entity: media_player.nest
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,0) 100%), 
+                  url({{ state_attr('media_player.nest','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - prefix: Google Nest
+            entity: sensor.placeholder
+            style: &small-title-nest-pos
+              top: 32.2%
+              left: 2.1%
+              <<: *media-text-style
+            type: state-label
+
+          - entity: sensor.nest_status
+            style: &small-state-nest-pos
+              top: 39.9%
+              left: 2.1%
+              <<: *media-text-style
+            type: state-label
+
+          - image: /local/overlay.svg
+            style: *small-nest-pos
+            tap_action:
+              action: call-service
+              service: media_player.media_play_pause
+              service_data:
+                entity_id: media_player.nest
+            hold_action:
+              action: none
+            title: null
+            type: image
+
+        type: conditional
+
+      # off
+      - conditions:
+          - entity: sensor.nest_status
+            state: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: *small-nest-pos
+            type: image
+
+          - image: /local/media_appletv.svg
+            style:
+              top: 11%
+              left: 11%
+              width: 12.5%
+              opacity: .07
+            type: image
+
+          - prefix: Nest
+            entity: sensor.placeholder
+            style:
+              <<: *small-title-nest-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.nest_status
+            style:
+              <<: *small-state-nest-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                   SMALL Küche                 #
+      #                                               #
+      #################################################
+
+      # on
+      - conditions:
+          - entity: sensor.kuche_status
+            state_not: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: &small-kuche-pos
+              top: 23.8%
+              left: 76.2%
+              width: 47.86%
+            type: image
+
+          - type: custom:mod-card
+            style:
+              <<: *small-kuche-pos
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --ha-card-border-radius: .64vw
+            card:
+              entity: media_player.kuche
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,0) 100%), 
+                  url({{ state_attr('media_player.kuche','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - prefix: Google Küche
+            entity: sensor.placeholder
+            style: &small-title-kuche-pos
+              top: 32.2%
+              left: 54.6%
+              <<: *media-text-style
+            type: state-label
+
+          - entity: sensor.kuche_status
+            style: &small-state-kuche-pos
+              top: 39.9%
+              left: 54.6%
+              <<: *media-text-style
+            type: state-label
+
+          - image: /local/overlay.svg
+            style: *small-kuche-pos
+            tap_action:
+              action: call-service
+              service: media_player.media_play_pause
+              service_data:
+                entity_id: media_player.kuche
+            hold_action:
+              action: none
+            title: null
+            type: image
+
+        type: conditional
+
+      # off
+      - conditions:
+          - entity: sensor.kuche_status
+            state: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: *small-kuche-pos
+            type: image
+
+          - image: /local/media_appletv.svg
+            style:
+              top: 11%
+              left: 63%
+              width: 12.5%
+              opacity: .07
+            type: image
+
+          - prefix: Google Küche
+            entity: sensor.placeholder
+            style:
+              <<: *small-title-kuche-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.kuche_status
+            style:
+              <<: *small-state-kuche-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                  SMALL Bad                    #
+      #                                               #
+      #################################################
+
+      # on
+      - conditions:
+          - entity: sensor.bad_status
+            state_not: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: &small-bad-pos
+              top: 76.2%
+              left: 23.8%
+              width: 47.86%
+            type: image
+
+          - type: custom:mod-card
+            style:
+              <<: *small-bad-pos
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --ha-card-border-radius: .64vw
+            card:
+              entity: media_player.bad
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,0) 100%), 
+                  url({{ state_attr('media_player.bad','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - prefix: Google Bad
+            entity: sensor.placeholder
+            style: &small-title-bad-pos
+              top: 85%
+              left: 2.1%
+              <<: *media-text-style
+            type: state-label
+
+          - entity: sensor.bad_status
+            style: &small-state-bad-pos
+              top: 92.4%
+              left: 2.1%
+              <<: *media-text-style
+            type: state-label
+
+          - image: /local/overlay.svg
+            style: *small-bad-pos
+            tap_action:
+              action: call-service
+              service: media_player.media_play_pause
+              service_data:
+                entity_id: media_player.bad
+            hold_action:
+              action: none
+            title: null
+            type: image
+
+        type: conditional
+
+      # off
+      - conditions:
+          - entity: sensor.bad_status
+            state: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: *small-bad-pos
+            type: image
+
+          - image: /local/media_appletv.svg
+            style:
+              top: 64%
+              left: 11%
+              width: 12.5%
+              opacity: .07
+            type: image
+
+          - prefix: Google Bad
+            entity: sensor.placeholder
+            style:
+              <<: *small-title-bad-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.bad_status
+            style:
+              <<: *small-state-bad-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+        type: conditional
+
+      #################################################
+      #                                               #
+      #                 SMALL Sonos                   #
+      #                                               #
+      #################################################
+
+      # on
+      - conditions:
+          - entity: sensor.sonos_status
+            state_not: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: &small-sonos-pos
+              top: 76.2%
+              left: 76.2%
+              width: 47.86%
+            type: image
+
+          - type: custom:mod-card
+            style:
+              <<: *small-sonos-pos
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --ha-card-border-radius: .64vw
+            card:
+              entity: media_player.sonos
+              <<: *media-player-config
+              style: |
+                ha-card > div.mmp__bg > div {
+                  background-image: linear-gradient(0deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,0) 100%), 
+                  url({{ state_attr('media_player.sonos','entity_picture') }}) !important;
+                  background-size: cover !important;
+                }
+              type: custom:mini-media-player
+
+          - prefix: Sonos
+            entity: sensor.placeholder
+            style: &small-title-sonos-pos
+              top: 85%
+              left: 54.6%
+              <<: *media-text-style
+            type: state-label
+
+          - entity: sensor.sonos_status
+            style: &small-state-sonos-pos
+              top: 92.4%
+              left: 54.6%
+              <<: *media-text-style
+            type: state-label
+
+          - image: /local/overlay.svg
+            style: *small-sonos-pos
+            tap_action:
+              action: call-service
+              service: media_player.media_play_pause
+              service_data:
+                entity_id: media_player.sonos
+            hold_action:
+              action: none
+            title: null
+            type: image
+
+        type: conditional
+
+      # off
+      - conditions:
+          - entity: sensor.sonos_status
+            state: Av
+        elements:
+
+          - image: /local/btn/med_small.svg
+            style: *small-sonos-pos
+            type: image
+
+          - image: /local/media_appletv.svg
+            style:
+              top: 64%
+              left: 63%
+              width: 12.5%
+              opacity: .07
+            type: image
+
+          - prefix: Sonos
+            entity: sensor.placeholder
+            style:
+              <<: *small-title-sonos-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+          - entity: sensor.sonos_status
+            style:
+              <<: *small-state-sonos-pos
+              <<: *media-text-off
+            <<: *noninteractive
+            type: state-label
+
+        type: conditional

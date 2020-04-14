@@ -1,0 +1,1407 @@
+##########################################################################
+#                                                                        #
+#                              * SETTINGS *                              #
+#                                                                        #
+##########################################################################
+
+custom_header:
+  kiosk_mode: true
+  exceptions:
+    - conditions:
+        user_agent: Mobile
+      config:
+        kiosk_mode: true
+
+preload_cards:
+  [markdown, conditional , history-graph, map, iframe, swipe-card]
+
+anchors:
+  ⚓₁: &title
+    entity: sensor.placeholder
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    type: state-label
+  ⚓₂: &title-style
+    color: '#bcbebf'
+    font-family: SF Text
+    font-size: 2.4vw
+    font-weight: 500
+    max-width: 1px
+    cursor: default
+  ⚓₃: &circle-sensor
+    type: custom:circle-sensor-card
+    stroke_width: 6
+    font_style:
+      font-family: SF Text
+      color: '#7d7e80'
+      font-size: 1vw
+      letter-spacing: -0.02vw
+      margin-top: 1.8%
+    gradient: true
+    max: 100
+    min: 0
+  ⚓₄: &circle-sensor-light
+    units: '%'
+    fill: none
+    stroke_color: '#aaabad'
+    <<: *circle-sensor
+  ⚓₅: &circle-style
+    height: 3.15vw
+    width: 3.15vw
+    opacity: 0.7
+######################################################################################################################################################################
+#                                                                                                                                                                    #
+#                                                                                Config                                                                              #
+#                                                                                                                                                                    #
+######################################################################################################################################################################
+button_card_templates:
+  light:
+    aspect_ratio: 1/1
+    show_state: true
+    show_icon: false
+    state: &button_card_state
+      - value: 'on'
+        styles:
+          card: [background-color: 'rgba(255, 255, 255, 0.8)']
+          name: [color: 'rgba(0, 0, 0, 0.6)']
+          state: [color: 'rgba(0, 0, 0, 0.6)']
+    custom_fields:
+      info: >
+        [[[ var brightness = Math.round( entity.attributes.brightness / 2.54 ); 
+        if (entity.state === 'on') return '<svg viewBox="0 0 50 50"><circle id="c_brightness" cx="25" cy="25" r="20.5" stroke="#b2b2b2" stroke-width="1.5" fill="none" />
+        <text x="50%" y="54%" fill="#8d8e90" font-size="14" text-anchor="middle" alignment-baseline="middle">' + brightness + '<tspan font-size="10">%</tspan></text></svg>'; ]]]
+    extra_styles: |
+      [[[ var radius = 20.5; 
+      var circumference = radius * 2 * Math.PI; 
+      var brightness = Math.round( entity.attributes.brightness / 2.54 ); 
+      return '#c_brightness { transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dasharray: ' + circumference + '; stroke-dashoffset: ' + (circumference - brightness / 100 * circumference) + ';}'; ]]]
+    styles:
+      name: &button_style_name_state
+        [justify-self: start, padding-bottom: 0.05vw, z-index: 1]
+      state: *button_style_name_state
+      custom_fields:
+        info: &circle_pos
+          [top: 8.5%, left: 56.2%, width: 3.5vw, position: absolute, letter-spacing: 0.03vw]
+      card: &button_style_card
+          [font-family: Sf Display, letter-spacing: 0.05vw, text-rendering: optimizeLegibility, font-weight: 400, color: 'rgba(255, 255, 255, 0.3)', font-size: 1.34vw, 
+          background-color: 'rgba(115, 115, 115, 0.2)', padding: 6.1vw 0.9vw 0.9vw 1.1vw, border-radius: 0.8vw, box-shadow: none, transition: none]
+
+  switch:
+    aspect_ratio: 1/1
+    show_state: true
+    show_icon: false
+    state: *button_card_state
+    styles:
+      name: *button_style_name_state
+      state: *button_style_name_state
+      card: *button_style_card
+
+######################################################################################################################################################################
+#                                                                                                                                                                    #
+#                                                                          Media Config                                                                              #
+#                                                                                                                                                                    #
+######################################################################################################################################################################
+  media:
+    aspect_ratio: 1/1
+    show_state: true
+    show_icon: false
+    state_display: >
+      [[[ if (entity.attributes.media_title == 'Nothing playing' || entity.attributes.media_title == 'No title' && entity.state == 'paused' ) return 'Inget spelas';
+      if (entity.attributes.media_title == 'No title' && entity.state == 'playing') return 'Ingen titel';
+      else if (entity.attributes.media_title != null) return entity.attributes.media_title; ]]]
+    custom_fields:
+      media_image: >
+        <svg viewBox="0 0 50 50" />
+      blur: >
+        [[[ if (entity.attributes.entity_picture != null) 
+        return '<svg viewBox="0 0 50 50" />'; ]]]
+      overlay: >
+        [[[ if (entity.state != 'off' && entity.state != 'idle' && entity.state != 'standby') 
+        return '<svg viewBox="0 0 50 50" />'; ]]]
+      play_pause: >
+        [[[ if (entity.state === 'playing') return '<svg viewBox="0 0 166 166"><style>.scale-up{animation: scale-up 0.3s cubic-bezier(.05,.5,.3,1) 1; transform-origin: center center;}
+        @keyframes scale-up{0%{opacity: 0; transform: scale(0);}100%{opacity: 1; transform: scale(1);}}</style><path class="scale-up" d="M0 0h59.9v166H0zm106.1 0H166v166h-59.9z"/></svg>'; 
+        if (entity.state === 'paused') return '<svg viewBox="0 0 166 166"><style>.scale-up{animation: scale-up 0.3s cubic-bezier(.05,.5,.3,1) 1; transform-origin: center center;}
+        @keyframes scale-up{0%{opacity: 0; transform: scale(0);}100%{opacity: 1; transform: scale(1);}}</style><path class="scale-up" d="M0 0l166 83L0 166z"/></svg>'; ]]]
+    styles:
+      custom_fields:
+        media_image:
+          [background-image: 
+          "[[[ if (entity.attributes.entity_picture == null) return 'linear-gradient(0deg, rgba(115, 115, 115, 0.2) 0%, rgba(115, 115, 115, 0.2) 100%)'; 
+          else return 'linear-gradient(0deg, rgba(13,17,19,0.9) 0%, rgba(13,17,19,0) 50%), url(' + entity.attributes.entity_picture + ')'; ]]]", 
+          background-size: cover, top: 0%, left: 0%, width: 100%, position: absolute]
+        blur:
+          [background-image: 
+          "[[[ if (entity.attributes.entity_picture == null) return 'none'; 
+          else return 'url(' + entity.attributes.entity_picture + ')'; ]]]", 
+          background-size: cover, top: 0%, left: 0%, width: 100%, filter: blur(4px), clip-path: inset(75.2% 0 0 0), position: absolute]
+        overlay:
+          [background: 
+          "[[[ if (entity.attributes.entity_picture == null) return 'rgba(255, 255, 255, 0.8)'; 
+          else return 'rgba(0, 0, 0, 0.6)'; ]]]", 
+          background-size: cover, z-index: 0, top: 76.5%, left: 0%, width: 100%, opacity: 1, position: absolute]
+        play_pause:
+          [filter: 
+          "[[[ if (entity.attributes.entity_picture == null) return 'none'; 
+          else return 'drop-shadow(0 0 1.3vw rgba(0,0,0,0.6))'; ]]]", 
+          fill: '#dedede', top: 0, right: 0, bottom: 0, left: 0, margin: auto, width: 21%, height: 21%, position: absolute]
+        icon:
+          [fill: 
+          "[[[ if (entity.state == 'off' || entity.state == 'idle' || entity.state == 'standby') return '#9da0a2'; 
+          else return 'rgba(255, 255, 255, 0.8)'; ]]]", 
+          top: 5.35%, left: 5.35%, width: 2.95vw, position: absolute]
+      name: *button_style_name_state
+      state: *button_style_name_state
+      card:
+        - <<: *button_style_card
+        - color: &media_font_color >
+            [[[ if (entity.state == 'off' || entity.state == 'idle' || entity.state == 'standby') return 'rgba(255, 255, 255, 0.3)'; 
+            if ((entity.state != 'off' && entity.state != 'idle' && entity.state != 'standby') && (entity.attributes.entity_picture == null))
+            return 'rgba(0, 0, 0, 0.6)'; else return '#efefef'; ]]]
+        - text-shadow: &media_text_shadow >
+            [[[ if (entity.attributes.entity_picture == null) return 'none'; 
+            else return '1px 1px 5px rgba(18, 22, 23, 0.9)' ; ]]]
+        - background-color: none
+        - padding: 17vw 0.9vw 0.9vw 1.1vw
+
+  media_small:
+    aspect_ratio: 1/1
+    show_state: true
+    show_icon: false
+    styles:
+      custom_fields:
+        icon:
+          [opacity: "[[[ return entity.attributes.entity_picture == null ? 1 : 0; ]]]", 
+          top: 11.5%, left: 11.5%, width: 2.9vw, position: absolute, fill: '#9da0a2']
+      name: *button_style_name_state
+      state: *button_style_name_state
+      card:
+        [<<: *button_style_card, color: *media_font_color, text-shadow: *media_text_shadow, 
+        background-color: none, background-size: cover,
+        background-image: 
+        "[[[ if (entity.state == 'off' || entity.state == 'idle' || entity.state == 'standby') 
+        return 'linear-gradient(0deg, rgba(115, 115, 115, 0.2) 0%, rgba(115, 115, 115, 0.2) 100%)';  
+        if ((entity.state != 'off' && entity.state != 'idle' && entity.state != 'standby') && (entity.attributes.entity_picture == null)) 
+        return 'linear-gradient(0deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%)'; 
+        else return 'linear-gradient(0deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,0) 100%), url(' + entity.attributes.entity_picture + ')'; ]]]"]
+
+#####################################################################################################################################################################
+#                                                                                                                                                                   #
+#                                                                          Media Config Ende                                                                        #
+#                                                                                                                                                                   #
+#####################################################################################################################################################################
+title: Villa Kunterbunt
+views:
+  - badges: []
+    cards:
+      - elements:
+          - title: preload_popup
+            entities:
+            style:
+              left: -50%
+              opacity: 0
+            type: custom:hui-entities-card
+
+          ##########################################################################
+          #                                                                        #
+          #                              * SIDEBAR *                               #
+          #                                                                        #
+          ##########################################################################
+
+          - image: local/sidebar.png
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              top: 50%
+              left: 10.6%
+              width: 21.5%
+              border-right: 1.5px solid rgba(58,69,73,0.2)
+            type: image
+
+          #################################################
+          #                                               #
+          #                     CLOCK                     #
+          #                                               #
+          #################################################
+
+          - entity: sensor.time
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              top: 10.8%
+              left: 2.8%
+              color: rgba(255, 255, 255, 0.7)
+              font-family: SF Text
+              font-size: 5.41vw
+              font-weight: 200
+              letter-spacing: -0.05vw
+              max-width: 1px
+              cursor: default
+            type: state-label
+
+          #################################################
+          #                                               #
+          #                   MARKDOWN                    #
+          #                                               #
+          #################################################
+
+          - content: >
+              <font color='#6a7377'><b>{{ states('sensor.dag') }}</b><br>
+              <b>{{ states('sensor.datum') }}</b> </font><br> 
+
+              <b>{{ states('sensor.sidebar_active') }}</b>
+
+            style:
+              top: 16%
+              left: 11%
+              width: 17.5vw
+              height: 1px
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --primary-text-color: rgba(255, 255, 255, 0.9)
+              font-family: SF Display
+              font-size: 1.6vw
+              font-weight: 300
+              letter-spacing: 0.06vw
+              line-height: 2.05vw
+              opacity: 0.75
+            type: custom:hui-markdown-card
+            
+          ##########################################################################
+          #                                                                        #
+          #                              * Wetter  *                               #
+          #                                                                        #
+          ##########################################################################                     
+          - backdrop: false
+            entity: weather.villa_kunterbunt
+            current: true
+            details: false
+            forecast: true
+            name: ' '
+            style: |
+                :host {
+                  left: 10%;
+                  top:  50.5%;
+                  width: 19%;
+                  height: 35% !important;
+                  overflow: hidden;
+                  background: none  !important;
+                  box-shadow: none !important;
+                  font-size: 1vw !important;
+                }
+                ha-card {
+                  background: none  !important;
+                  box-shadow: none !important;
+                  flex-flow: row-reverse !important;
+                  padding: 2 !important;
+                }
+            type: 'custom:weather-card'
+
+          - action: none
+            entities:
+              - color: '#385581'
+                entity: sensor.buienradar_feel_temperature
+              - color: green
+                entity: sensor.heizkorper_wohnzimmer
+            group: false
+            points_per_hour: 1
+            line_width: 3
+            hour24: true
+            hours_to_show: 48
+            show:
+              fill: fade
+              icon: false
+              name: false
+              state: false
+              name_adaptive_color: true
+              labels: hover
+              legend: false
+            style:
+              top: 93%
+              left: 10.5%
+              width: 22%
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --primary-text-color: rgba(255, 255, 255, 0.9)
+              font-family: SF Display
+              font-size: 1.6vw
+              font-weight: 300
+              letter-spacing: 0.06vw
+              line-height: 2.05vw
+              opacity: 0.75
+            type: custom:mini-graph-card  
+                          
+          ##########################################################################
+          #                                                                        #
+          #                              * Personen*                               #
+          #                                                                        #
+          ##########################################################################            
+            
+          #################################################
+          #                                               #
+          #                    Frank                      #
+          #                                               #
+          #################################################
+
+          - action: none
+            entity: person.frank
+            state_image:
+              home: /local/frankzuhause.png
+              work: /local/work.png
+              not_home: /local/not_home.png
+            style:
+              background-color: 'rgba(255, 255, 255, 0.0)'
+              border-radius: 10vw
+              left: 6.05%
+              top: 65.5%
+              width: 7%
+            tap_action: !include popup/frank.yaml
+            hold_action: !include popup/frank.yaml
+            type: image
+
+            
+          #################################################
+          #                                               #
+          #                    Stephanie                  #
+          #                                               #
+          #################################################
+
+          - action: none
+            entity: person.frank
+            state_image:
+              home: /local/frankzuhause.png
+              work: /local/work.png
+              not_home: /local/not_home.png
+            style:
+              background-color: 'rgba(255, 255, 255, 0.0)'
+              border-radius: 10vw
+              left: 15.05%
+              top: 65.5%
+              width: 7%
+            tap_action: !include popup/frank.yaml
+            hold_action: !include popup/frank.yaml
+            type: image
+
+          ##########################################################################
+          #                                                                        #
+          #                              * Buttons *                               #
+          #                                                                        #
+          ##########################################################################        
+
+          #################################################
+          #                                               #
+          #                 BUTTON 1                      #
+          #                                               #
+          #################################################
+
+          - icon: 'bha:thermostat'
+            style:
+              top: 80.41%
+              left: 11%
+              color: rgba(255, 255, 255, 0.10)
+              --iron-icon-height: 7.5vw
+              --iron-icon-width: 7.5vw
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace/wetter
+            title: null
+            type: icon
+
+          #################################################
+          #                                               #
+          #                  BUTTON 2                     #
+          #                                               #
+          #################################################
+
+          - icon: 'mdi:information-outline'
+            style:
+              top: 87.55%
+              left: 4.5%
+              color: rgba(255, 255, 255, 0.10)
+              --iron-icon-height: 4vw
+              --iron-icon-width: 4vw
+            tap_action: !include popup/sidebar_information.yaml
+            title: null
+            type: icon
+
+          #################################################
+          #                                               #
+          #                 BUTTON 3                      #
+          #                                               #
+          #################################################
+
+          - icon: 'mdi:home-heart'
+            style:
+              top: 87.55%
+              left: 16.5%
+              color: rgba(255, 255, 255, 0.10)
+              --iron-icon-height: 4.6vw
+              --iron-icon-width: 4.6vw
+            tap_action: !include popup/sidebar_scenarier.yaml
+            title: null
+            type: icon
+
+
+          ##########################################################################
+          #                                                                        #
+          #                             * Lichter *                                #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Lichter
+            <<: *title
+            style:
+              top: 9.15%
+              left: 24.85%
+              <<: *title-style
+          ##########################################################################
+          #                                                                        #
+          #                               Spalte 1                                 #
+          #                                                                        #
+          ##########################################################################
+          #################################################
+          #                                               #
+          #                   Wohnzimmer                  #
+          #                                               #
+          #################################################
+
+          - entity: light.wohnzimmer
+            state_image:
+              'on': /local/btn/wohnen_an.png
+              'off': /local/btn/wohnen_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_1-pos
+              top: 20.35%
+              left: 30.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.wohnzimmer
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_1-pos
+
+          - image: /local/overlay.svg
+            style: *var_1-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.wohnzimmer
+            hold_action: !include popup/wohnzimmer.yaml
+            title: null
+            type: image
+            
+          #################################################
+          #                                               #
+          #                   Esszimmer                   #
+          #                                               #
+          #################################################
+
+          - entity: light.esszimmer
+            state_image:
+              'on': /local/btn/essen_an.png
+              'off': /local/btn/essen_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_2-pos
+              top: 20.35%
+              left: 39.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.esszimmer
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_2-pos
+
+          - image: /local/overlay.svg
+            style: *var_2-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.esszimmer
+            hold_action: !include popup/esszimmer.yaml
+            title: null
+            type: image
+
+          #################################################
+          #                                               #
+          #                   Küche                       #
+          #                                               #
+          #################################################
+
+          - entity: light.kuche
+            state_image:
+              'on': /local/btn/kuche_an.png
+              'off': /local/btn/kuche_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_3-pos
+              top: 20.35%
+              left: 48.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.kuche
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_3-pos
+
+          - image: /local/overlay.svg
+            style: *var_3-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.kuche
+            hold_action: !include popup/kuche.yaml
+            title: null
+            type: image
+            
+          #################################################
+          #                                               #
+          #                   Gäste WC                    #
+          #                                               #
+          #################################################
+
+          - entity: light.wc
+            state_image:
+              'on': /local/btn/wc_an.png
+              'off': /local/btn/wc_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_4-pos
+              top: 20.35%
+              left: 57.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.wc
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_4-pos
+
+          - image: /local/overlay.svg
+            style: *var_4-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.wc
+            hold_action: !include popup/wc.yaml
+            title: null
+            type: image
+          ##########################################################################
+          #                                                                        #
+          #                               Spalte 2                                 #
+          #                                                                        #
+          ##########################################################################
+
+          #################################################
+          #                                               #
+          #                  Badezimmer                   #
+          #                                               #
+          #################################################
+
+          - entity: light.bad
+            state_image:
+              'on': /local/btn/bad_an.png
+              'off': /local/btn/bad_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_5-pos
+              top: 35.35%
+              left: 30.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.bad
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_5-pos
+
+          - image: /local/overlay.svg
+            style: *var_5-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.bad
+            hold_action: !include popup/bad.yaml
+            title: null
+            type: image
+            
+          #################################################
+          #                                               #
+          #                   Schlafzimmer                #
+          #                                               #
+          #################################################
+
+          - entity: light.schlafzimmer
+            state_image:
+              'on': /local/btn/schlafen_an.png
+              'off': /local/btn/schlafen_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_6-pos
+              top: 35.35%
+              left: 39.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.schlafzimmer
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_6-pos
+
+          - image: /local/overlay.svg
+            style: *var_6-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.schlafzimmer
+            hold_action: !include popup/schlafzimmer.yaml
+            title: null
+            type: image
+
+          #################################################
+          #                                               #
+          #                   Elly                        #
+          #                                               #
+          #################################################
+
+          - entity: light.elly
+            state_image:
+              'on': /local/btn/elly_an.png
+              'off': /local/btn/elly_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_7-pos
+              top: 35.35%
+              left: 48.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.elly
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_7-pos
+
+          - image: /local/overlay.svg
+            style: *var_7-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.elly
+            hold_action: !include popup/elly.yaml
+            title: null
+            type: image
+            
+          #################################################
+          #                                               #
+          #                   Tom                         #
+          #                                               #
+          #################################################
+
+          - entity: light.tom
+            state_image:
+              'on': /local/btn/tom_an.png
+              'off': /local/btn/tom_aus.png
+              unavailable: /local/btn/unavailable.svg
+            style: &var_8-pos
+              top: 35.35%
+              left: 57.31%
+              width: 10%
+              --ha-card-box-shadow: none
+            type: image
+
+          - type: custom:color-lite-card
+            entity: light.tom
+            image: /local/btn/wled.png
+            color_image: /local/btn/rled.png         
+            style: *var_8-pos
+
+          - image: /local/overlay.svg
+            style: *var_8-pos
+            tap_action:
+              action: call-service
+              service: light.toggle
+              service_data:
+                entity_id: light.tom
+            hold_action: !include popup/tom.yaml
+            title: null
+            type: image
+
+          ##########################################################################
+          #                                                                        #
+          #                               * Keller & Garten                        #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Flur, Keller & Garten
+            <<: *title
+            style:
+              top: 9.15%
+              left: 62.55%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                 Lichter Slider                #
+          #                                               #
+          #################################################
+          - cards: !include light2.yaml
+            start_card: 1
+            parameters:
+              effect: coverflow
+              speed: 450
+              spaceBetween: 10
+              threshold: 30
+              coverflowEffect:
+                rotate: 70
+                stretch: 0
+                depth: 300
+                modifier: 1
+                slideShadows : true
+              pagination:
+                type: 'bullets'
+            style:
+              top: 11.6%
+              left: 74.8%
+              width: 28.97%
+              height: 1px
+              --ha-card-background: none
+              --ha-card-border-radius: 0.75vw
+              --ha-card-box-shadow: none
+              image-rendering: crisp-edges
+              padding: 0
+            type: custom:swipe-card
+
+          ##########################################################################
+          #                                                                        #
+          #                               * MEDIA *                                #
+          #                                                                        #
+          ##########################################################################
+ 
+          - prefix: Media
+            <<: *title
+            style:
+              top: 53.4%
+              left: 24.75%
+              <<: *title-style
+
+          - cards:
+
+            - type: picture-elements
+              image: /local/overlay.svg
+              elements:
+
+                #################################################
+                #                                               #
+                #              Google Küche                     #
+                #                                               #
+                #################################################
+
+                - conditions:
+                    - entity: input_select.conditional_media
+                      state: Küche
+                  elements:
+                    - entity: media_player.kuche
+                      tap_action:
+                        action: &media_tap_action >
+                          [[[ if (entity.state == 'off' || entity.state == 'idle' || entity.state == 'standby') 
+                          return 'none'; else return 'call-service'; ]]]
+                        service: media_player.media_play_pause
+                        service_data:
+                          entity_id: media_player.kuche
+                      style:
+                        top: 50%
+                        left: 50%
+                        width: 100%
+                      template: media
+                      type: custom:button-card
+                  type: conditional
+
+                #################################################
+                #                                               #
+                #              Google Nest                      #
+                #                                               #
+                #################################################
+
+                - conditions:
+                    - entity: input_select.conditional_media
+                      state: Google Nest
+                  elements:
+                    - entity: media_player.nest
+                      tap_action:
+                        action: *media_tap_action
+                        service: media_player.media_play_pause
+                        service_data:
+                          entity_id: media_player.nest
+                      style:
+                        top: 50%
+                        left: 50%
+                        width: 100%
+                      template: media
+                      type: custom:button-card
+                  type: conditional
+
+                #################################################
+                #                                               #
+                #                Sonos                          #
+                #                                               #
+                #################################################
+
+                - conditions:
+                    - entity: input_select.conditional_media
+                      state: Google Sonos
+                  elements:
+                    - entity: media_player.sonos
+                      tap_action:
+                        action: *media_tap_action
+                        service: media_player.media_play_pause
+                        service_data:
+                          entity_id: media_player.sonos
+                      style:
+                        top: 50%
+                        left: 50%
+                        width: 100%
+                      template: media
+                      type: custom:button-card
+                  type: conditional
+
+                #################################################
+                #                                               #
+                #                 Google Bad                    #
+                #                                               #
+                #################################################
+
+                - conditions:
+                    - entity: input_select.conditional_media
+                      state: Google Bad
+                  elements:
+                    - entity: media_player.bad
+                      tap_action:
+                        action: *media_tap_action
+                        service: media_player.media_play_pause
+                        service_data:
+                          entity_id: media_player.bad
+                      style:
+                        top: 50%
+                        left: 50%
+                        width: 100%
+                      template: media
+                      type: custom:button-card
+                  type: conditional
+
+                #################################################
+                #                                               #
+                #               GOOGLE  MINI                    #
+                #                                               #
+                #################################################
+
+                - conditions:
+                    - entity: input_select.conditional_media
+                      state: Google Mini
+                  elements:
+                    - entity: media_player.mini
+                      tap_action:
+                        action: *media_tap_action
+                        service: media_player.media_play_pause
+                        service_data:
+                          entity_id: media_player.mini
+                      style:
+                        top: 50%
+                        left: 50%
+                        width: 100%
+                      template: media
+                      type: custom:button-card
+                  type: conditional
+
+                #################################################
+                #                                               #
+                #           * SMALL MEDIA CONTROLS *            #
+                #                                               #
+                #################################################
+
+            - type: picture-elements
+              image: /local/overlay.svg
+              elements:
+
+                # SMALL Nest
+                - entity: media_player.nest
+                  name: Google Nest
+                  tap_action:
+                    action: *media_tap_action
+                    service: media_player.media_play_pause
+                    service_data:
+                      entity_id: media_player.nest
+                  style:
+                    top: 23.9%
+                    left: 23.8%
+                    width: 47.7%
+                  template: media_small
+                  type: custom:button-card
+
+                # SMALL Küche
+                - entity: media_player.kuche
+                  name: Google Küche
+                  tap_action:
+                    action: *media_tap_action
+                    service: media_player.media_play_pause
+                    service_data:
+                      entity_id: media_player.kuche
+                  style:
+                    top: 23.9%
+                    left: 76.2%
+                    width: 47.7%
+                  template: media_small
+                  type: custom:button-card
+
+                # SMALL Bad
+                - entity: media_player.bad
+                  name: Google Bad
+                  tap_action:
+                    action: *media_tap_action
+                    service: media_player.media_play_pause
+                    service_data:
+                      entity_id: media_player.bad
+                  style:
+                    top: 76.2%
+                    left: 23.8%
+                    width: 47.7%
+                  template: media_small
+                  type: custom:button-card
+
+                # SMALL Mini
+                - entity: media_player.mini
+                  name: Google Mini
+                  tap_action:
+                    action: *media_tap_action
+                    service: media_player.media_play_pause
+                    service_data:
+                      entity_id: media_player.mini
+                  style:
+                    top: 76.2%
+                    left: 76.2%
+                    width: 47.7%
+                  template: media_small
+                  type: custom:button-card
+
+            start_card: 1
+            parameters:
+              effect: coverflow
+              speed: 450
+              spaceBetween: 10
+              threshold: 30
+              coverflowEffect:
+                rotate: 70
+                stretch: 0
+                depth: 300
+                modifier: 1
+                slideShadows : true
+            style:
+              top: 56.55%
+              left: 35.8%
+              width: 20.97%
+              height: 1px
+              --ha-card-background: none
+              --ha-card-border-radius: .88vw
+              --ha-card-box-shadow: none
+              image-rendering: crisp-edges
+              padding: 0
+            type: custom:swipe-card
+
+          ##########################################################################
+          #                                                                        #
+          #                               * Kategorie 4 *                          #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Sonstiges
+            <<: *title
+            style:
+              top: 53.4%
+              left: 49.6%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                     Nest Hello                #
+          #                                               #
+          #################################################
+
+          - entity: camera.front_door_camera
+            camera_image: camera.front_door_camera
+            hold_action:
+              action: none
+            style:
+              left: 83.0%
+              top: 73.0%
+              width: 30%
+              border: 2px solid rgba(0, 0, 0, .2)
+              border-radius: 12%
+            tap_action:
+              action: toggle
+            title: null
+            type: image
+
+        image: /local/uibg.png
+        type: picture-elements
+    panel: true
+    path: default_view
+    title: Home
+    
+    
+  - title: Wetter
+    panel: true
+    path: wetter
+    badges: []
+    cards:
+      - elements:
+          ##########################################################################
+          #                                                                        #
+          #                              * SIDEBAR *                               #
+          #                                                                        #
+          ##########################################################################
+
+          - image: local/sidebar.png
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              top: 50%
+              left: 10.6%
+              width: 21.5%
+              border-right: 1.5px solid rgba(58,69,73,0.2)
+            type: image
+
+          #################################################
+          #                                               #
+          #                     CLOCK                     #
+          #                                               #
+          #################################################
+
+          - entity: sensor.time
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              top: 10.8%
+              left: 2.8%
+              color: rgba(255, 255, 255, 0.7)
+              font-family: SF Text
+              font-size: 5.41vw
+              font-weight: 200
+              letter-spacing: -0.05vw
+              max-width: 1px
+              cursor: default
+            type: state-label
+
+          #################################################
+          #                                               #
+          #                   MARKDOWN                    #
+          #                                               #
+          #################################################
+
+          - content: >
+              <font color='#6a7377'><b>{{ states('sensor.dag') }}</b><br>
+              <b>{{ states('sensor.datum') }}</b> </font><br> 
+
+
+
+              <b>{{ states('sensor.sidebar_active') }}</b>
+
+#              {{ states('sensor.sidebar_weather') }}
+           
+            style:
+              top: 16%
+              left: 11%
+              width: 17.5vw
+              height: 1px
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --primary-text-color: rgba(255, 255, 255, 0.9)
+              font-family: SF Display
+              font-size: 1.6vw
+              font-weight: 300
+              letter-spacing: 0.06vw
+              line-height: 2.05vw
+              opacity: 0.75
+            type: custom:hui-markdown-card
+            
+          ##########################################################################
+          #                                                                        #
+          #                              * Wetter  *                               #
+          #                                                                        #
+          ##########################################################################                     
+                   
+          - backdrop: false
+            entity: weather.villa_kunterbunt
+            current: true
+            details: false
+            forecast: true
+            name: ' '
+            style: |
+                :host {
+                  left: 10%;
+                  top:  50.5%;
+                  width: 19%;
+                  height: 35% !important;
+                  overflow: hidden;
+                  background: none  !important;
+                  box-shadow: none !important;
+                  font-size: 1vw !important;
+                }
+                ha-card {
+                  background: none  !important;
+                  box-shadow: none !important;
+                  flex-flow: row-reverse !important;
+                  padding: 2 !important;
+                }
+            type: 'custom:weather-card'
+
+          - action: none
+            entities:
+              - color: '#385581'
+                entity: sensor.buienradar_feel_temperature
+              - color: green
+                entity: sensor.heizkorper_wohnzimmer
+            group: false
+            points_per_hour: 15
+            line_width: 3
+            hour24: true
+            hours_to_show: 1.5
+            show:
+              fill: fade
+              icon: false
+              name: false
+              state: false
+              name_adaptive_color: true
+              labels: hover
+              legend: false
+            style:
+              top: 93%
+              left: 10.5%
+              width: 22%
+              --ha-card-background: none
+              --ha-card-box-shadow: none
+              --primary-text-color: rgba(255, 255, 255, 0.9)
+              font-family: SF Display
+              font-size: 1.6vw
+              font-weight: 300
+              letter-spacing: 0.06vw
+              line-height: 2.05vw
+              opacity: 0.75
+            type: custom:mini-graph-card  
+                          
+
+          ##########################################################################
+          #                                                                        #
+          #                              * Personen*                               #
+          #                                                                        #
+          ##########################################################################            
+            
+          #################################################
+          #                                               #
+          #                    Frank                      #
+          #                                               #
+          #################################################
+
+          - action: none
+            entity: person.frank
+            state_image:
+              home: /local/frankzuhause.png
+              work: /local/work.png
+              not_home: /local/not_home.png
+            style:
+              background-color: 'rgba(255, 255, 255, 0.0)'
+              border-radius: 10vw
+              left: 6.05%
+              top: 65.5%
+              width: 7%
+            tap_action: !include popup/frank.yaml
+            hold_action: !include popup/frank.yaml
+            type: image
+
+            
+          #################################################
+          #                                               #
+          #                    Stephanie                  #
+          #                                               #
+          #################################################
+
+          - action: none
+            entity: person.frank
+            state_image:
+              home: /local/frankzuhause.png
+              work: /local/work.png
+              not_home: /local/not_home.png
+            style:
+              background-color: 'rgba(255, 255, 255, 0.0)'
+              border-radius: 10vw
+              left: 15.05%
+              top: 65.5%
+              width: 7%
+            tap_action: !include popup/frank.yaml
+            hold_action: !include popup/frank.yaml
+            type: image
+
+          ##########################################################################
+          #                                                                        #
+          #                              * Buttons *                               #
+          #                                                                        #
+          ##########################################################################        
+
+          #################################################
+          #                                               #
+          #                 BUTTON 1                      #
+          #                                               #
+          #################################################
+
+          - icon: 'mdi:home'
+            style:
+              top: 80.41%
+              left: 11%
+              color: rgba(255, 255, 255, 0.10)
+              --iron-icon-height: 8.0vw
+              --iron-icon-width: 8.0vw
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace/default_view
+            title: null
+            type: icon
+
+          #################################################
+          #                                               #
+          #                  BUTTON 2                     #
+          #                                               #
+          #################################################
+
+          - icon: 'mdi:information-outline'
+            style:
+              top: 87.55%
+              left: 4.5%
+              color: rgba(255, 255, 255, 0.10)
+              --iron-icon-height: 4vw
+              --iron-icon-width: 4vw
+            tap_action: !include popup/sidebar_information.yaml
+            title: null
+            type: icon
+
+          #################################################
+          #                                               #
+          #                 BUTTON 3                      #
+          #                                               #
+          #################################################
+
+          - icon: 'mdi:home-heart'
+            style:
+              top: 87.55%
+              left: 16.5%
+              color: rgba(255, 255, 255, 0.10)
+              --iron-icon-height: 4.6vw
+              --iron-icon-width: 4.6vw
+            tap_action: !include popup/sidebar_scenarier.yaml
+            title: null
+            type: icon
+          ##########################################################################
+          #                                                                        #
+          #                             * Heizung *                                #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Heizung
+            <<: *title
+            style:
+              top: 9.15%
+              left: 24.85%
+              <<: *title-style
+          ##########################################################################
+          #                                                                        #
+          #                               Spalte 1                                 #
+          #                                                                        #
+          ##########################################################################
+          #################################################
+          #                                               #
+          #                   Wohnzimmer                  #
+          #                                               #
+          #################################################
+          - entity: climate.room_climate_bad
+            image: /local/btn/thermo_bad.png
+            style:
+              top: 32%
+              left: 36%
+              width: 38%
+            type: image
+
+          - entity: climate.room_climate_bad
+            chevron_size: 80
+            highlight_tap: false
+            no_card: false
+            small_i: true
+            title: ' '
+            step: 1
+            style: |
+                :host {
+                  left: 36%;
+                  top:  29.85%;
+                  width: 12.5%;
+                  box-shadow: none !important;
+                }
+                ha-card {
+                  background: none  !important;
+                  box-shadow: none !important;
+                }
+            type: 'custom:au190-thermostat-card'
+
+          - entity: climate.room_climate_bad
+            image: /local/btn/thermo_keller.png
+            style:
+              top: 32%
+              left: 56%
+              width: 38%
+            type: image
+
+          - entity: climate.room_climate_keller
+            chevron_size: 80
+            highlight_tap: false
+            no_card: false
+            small_i: true
+            title: ' '
+            step: 1
+            style: |
+                :host {
+                  left: 56%;
+                  top:  29.85%;
+                  width: 12.5%;
+                  box-shadow: none !important;
+                }
+                ha-card {
+                  background: none  !important;
+                  box-shadow: none !important;
+                }
+            type: 'custom:au190-thermostat-card'
+
+        image: /local/uibg.png
+        type: picture-elements

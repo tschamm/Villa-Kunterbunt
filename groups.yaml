@@ -1,0 +1,24 @@
+keller:
+    name: Keller
+    entities:
+      ['light.flur_ug', 'light.bar', 'light.pc', 'light.treppe']
+
+erdgeschoss:
+    name: Erdgeschoss
+    entities:
+      ['light.wohnzimmer', 'light.esszimmer', 'light.kuche', 'light.flur_eg', 'light.wc']
+
+obergeschoss:
+    name: Obergeschoss
+    entities:
+      ['light.flur_og', 'light.elly', 'light.tom', 'light.bad', 'light.schlafzimmer']
+
+garten:
+    name: Garten
+    entities:
+      ['light.gartenspot', 'light.feuer', 'light.fluter']
+licht:
+    name: Alle Lampen
+    entities:
+      ['group.keller', 'group.erdgeschoss', 'group.obergeschoss', 'group.garten']
+

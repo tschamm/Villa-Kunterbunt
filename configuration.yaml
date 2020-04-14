@@ -1,0 +1,249 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+frontend:
+  themes: !include themes/themes.yaml
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+sensor: !include sensors.yaml
+
+lovelace:
+  mode: yaml
+  resources:
+    [ {'url':'/hacsfiles/bar-card/bar-card.js',                                  'type':'js'},
+      {'url':'/hacsfiles/button-card/button-card.js',                            'type':'module'},
+      {'url':'/hacsfiles/button-entity-row/button-entity-row.js',                'type':'module'},
+      {'url':'/hacsfiles/custom-header/custom-header.js',                        'type':'module'},
+      {'url':'/hacsfiles/light-entity-card/light-entity-card.js',                'type':'js'},
+      {'url':'/hacsfiles/lovelace-card-mod/card-mod.js',                         'type':'module'},
+      {'url':'/hacsfiles/lovelace-card-preloader/lovelace-card-preloader.js',    'type':'module'},
+      {'url':'/hacsfiles/lovelace-layout-card/layout-card.js',                   'type':'module'},
+      {'url':'/hacsfiles/lovelace-slider-entity-row/slider-entity-row.js',       'type':'module'},
+      {'url':'/hacsfiles/mini-graph-card/mini-graph-card-bundle.js',             'type':'module'},
+      {'url':'/hacsfiles/mini-media-player/mini-media-player-bundle.js',         'type':'module'},
+      {'url':'/hacsfiles/popup-backdrop-filter/popup-backdrop-filter.js',        'type':'module'},
+      {'url':'/hacsfiles/stack-in-card/stack-in-card.js',                        'type':'module'},
+      {'url':'/hacsfiles/simple-thermostat/simple-thermostat.js',                'type':'module'},
+      {'url':'/hacsfiles/lovelace-thermostat-card//main.js',                     'type':'module'},
+      {'url':'/hacsfiles/clima/au190_thermostat_card.js',              'type':'module'},
+      {'url':'/hacsfiles/weather-card/weather-card.js',                          'type':'module'},
+      {'url':'/hacsfiles/simple-weather-card/simple-weather-card-bundle.js',     'type':'module'},
+      {'url':'/hacsfiles/custom-lovelace/thermostat-card/thermostat-card.js?v=1','type':'module'},      
+      {'url':'/hacsfiles/light-slider-card.js?v=3.2.3',                          'type':'js'},
+      {'url':'/hacsfiles/light-slider-card-lajv.js',                             'type':'js'},
+      {'url':'/hacsfiles/hass-bha-icons/hass-bha-icons.js',                      'type':'js'},
+      {'url':'/hacsfiles/color-lite-card.js?v=0.348',                            'type':'js'},
+      {'url':'/hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js?v=0.3.2', 'type':'js'},      
+      {'url':'/hacsfiles/swipe-card/swipe-card.js',                              'type':'module'} ]
+      
+      
+
+# Apple Homekit
+homekit:
+  filter:
+    include_entities:
+      ['light.wohnzimmer', 
+      'light.kuche', 
+      'light.esszimmer', 
+      'light.flur_ug', 
+      'light.pc', 
+      'light.wc', 
+      'light.elly', 
+      'light.tom', 
+      'light.bad', 
+      'light.flur_og', 
+      'light.flur_ug', 
+      'light.eingang', 
+      'light.flur_eg', 
+      'light.terrasse', 
+      'light.schlafzimmer', 
+      'light.bar', 
+      'light.garten', 
+      'light.feuer', 
+      'media_player.bad', 
+      'media_player.nest', 
+      'media_player.kuche',
+      'media_player.mini', 
+      'media_player.sonos', 
+      'climate.room_climate_kuche', 
+      'climate.room_climate_keller', 
+      'climate.room_climate_bad', 
+      'climate.room_climate_elly', 
+      'climate.room_climate_tom', 
+      'climate.room_climate_schlafzimmer', 
+      'climate.room_climate_wohnzimmer', 
+      'climate.room_climate_flur_eg', 
+      'alarm_control_panel.intrusiondetectionsystem']
+
+# Google Cloud
+cloud:
+  google_actions:
+    filter:
+      include_entities:
+        ['light.wohnzimmer', 
+        'light.kuche', 
+        'light.esszimmer', 
+        'light.flur_ug', 
+        'light.pc', 
+        'light.wc', 
+        'light.elly', 
+        'light.tom', 
+        'light.bad', 
+        'light.flur_og', 
+        'light.flur_ug', 
+        'light.eingang', 
+        'light.flur_eg', 
+        'light.terrasse', 
+        'light.schlafzimmer', 
+        'light.bar', 
+        'light.garten', 
+        'light.feuer',
+        'climate.room_climate_kuche', 
+        'climate.room_climate_keller', 
+        'climate.room_climate_bad', 
+        'climate.room_climate_elly', 
+        'climate.room_climate_tom', 
+        'climate.room_climate_schlafzimmer', 
+        'climate.room_climate_wohnzimmer', 
+        'climate.room_climate_flur_eg', 
+        'alarm_control_panel.intrusiondetectionsystem']
+    entity_config:
+      climate.room_climate_kuche:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Küche
+      climate.room_climate_keller:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Keller
+      climate.room_climate_bad:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Badezimmer
+      climate.room_climate_elly:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Elly
+      climate.room_climate_tom:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Tom
+      climate.room_climate_schlafzimmer:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Schlafzimmer
+      climate.room_climate_wohnzimmer:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Wohnzimmer
+      climate.room_climate_flur_eg:
+        name: Heizung
+        aliases:
+          ['Temperatur']
+        room: Flur
+
+
+# Philips Hue
+hue:
+  bridges:
+    - host: !secret hue_host
+      allow_unreachable: true
+      allow_hue_groups: true
+
+camera:
+  - platform: ffmpeg
+    name: Front Door Camera
+    input: https://stream-eu1-charlie.dropcam.com:443/nexus_aac/c1bc0638f6434259afed545083e1a3c9/chunklist_w1943104117.m3u8?public=vWmW0WrvIK
+
+
+hacs:
+  token: !secret hacs_token
+  
+person:
+  - name: Frank
+    id: f0df9f947e9043388c990def0ebbad49
+    device_trackers:
+      [ 'device_tracker.iphone']
+      
+browser_mod:
+
+weather:
+  - platform: buienradar
+    name: 'buienWeather'
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude
+    forecast: true
+ 
+boschshc:
+   ip_address: !secret boschshc_ip
+   ssl_certificate: !secret ssl_cert
+   ssl_key: !secret ssl_key
+
+input_select:
+  conditional_media:
+    initial: Küche
+    options:
+      ['Sonos', 'Nest', 'Küche', 'Bad', 'Mini']
+
+switch:
+  - platform: template
+    switches:
+      media_play_pause_nest:
+        value_template: "{% if is_state('media_player.nest', 'playing') %} on {% else %} off {% endif %}"
+        turn_on:
+          service: media_player.media_play
+          entity_id: media_player.nest
+        turn_off:
+          service: media_player.media_pause
+          entity_id: media_player.nest
+
+      media_play_pause_kuche:
+        value_template: "{% if is_state('media_player.kuche', 'playing') %} on {% else %} off {% endif %}"
+        turn_on:
+          service: media_player.media_play
+          entity_id: media_player.kuche
+        turn_off:
+          service: media_player.media_pause
+          entity_id: media_player.kuche
+
+      media_play_pause_bad:
+        value_template: "{% if is_state('media_player.bad', 'playing') %} on {% else %} off {% endif %}"
+        turn_on:
+          service: media_player.media_play
+          entity_id: media_player.bad
+        turn_off:
+          service: media_player.media_pause
+          entity_id: media_player.bad
+
+      media_play_pause_sonos:
+        value_template: "{% if is_state('media_player.sonos', 'playing') %} on {% else %} off {% endif %}"
+        turn_on:
+          service: media_player.media_play
+          entity_id: media_player.sonos
+        turn_off:
+          service: media_player.media_pause
+          entity_id: media_player.sonos
+          
+      media_play_pause_mini:
+        value_template: "{% if is_state('media_player.mini', 'playing') %} on {% else %} off {% endif %}"
+        turn_on:
+          service: media_player.media_play
+          entity_id: media_player.mini
+        turn_off:
+          service: media_player.media_pause
+          entity_id: media_player.mini
