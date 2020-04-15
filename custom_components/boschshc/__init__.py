@@ -2,27 +2,15 @@
 import asyncio
 import logging
 
+from boschshcpy import SHCSession
 import voluptuous as vol
 
-from homeassistant.const import (
-    CONF_NAME,
-    CONF_IP_ADDRESS,
-    EVENT_HOMEASSISTANT_START,
-    EVENT_HOMEASSISTANT_STOP,
-)
-
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.const import CONF_IP_ADDRESS, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv, device_registry as dr
-from homeassistant.helpers.entity import Entity, async_generate_entity_id
 
-from homeassistant.util import slugify
-
-from .const import (
-    DOMAIN,
-    CONF_SSL_CERTIFICATE,
-    CONF_SSL_KEY
-)
+from .const import CONF_SSL_CERTIFICATE, CONF_SSL_KEY, DOMAIN
 
 ENTITY_ID_FORMAT = DOMAIN + ".{}"
 
@@ -30,7 +18,7 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_NAME, default="Home"): cv.string,
+                vol.Required(CONF_NAME, default="Bosch SHC"): cv.string,
                 vol.Required(CONF_IP_ADDRESS): cv.string,
                 vol.Required(CONF_SSL_CERTIFICATE): cv.isfile,
                 vol.Required(CONF_SSL_KEY): cv.isfile,
@@ -40,9 +28,17 @@ CONFIG_SCHEMA = vol.Schema(
     extra=vol.ALLOW_EXTRA,
 )
 
-PLATFORMS = ["binary_sensor", "cover", "switch", "sensor", "climate", "alarm_control_panel"]
+PLATFORMS = [
+    "binary_sensor",
+    "cover",
+    "switch",
+    "sensor",
+    "climate",
+    "alarm_control_panel",
+]
 
 _LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the Bosch SHC component."""
@@ -52,9 +48,17 @@ async def async_setup(hass: HomeAssistant, config: dict):
     if not conf:
         return True
 
+    configured_hosts = {
+        entry.data.get("ip_address")
+        for entry in hass.config_entries.async_entries(DOMAIN)
+    }
+
+    if conf[CONF_IP_ADDRESS] in configured_hosts:
+        return True
+
     hass.async_create_task(
         hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": SOURCE_IMPORT}, data=conf,
+            DOMAIN, context={"source": SOURCE_IMPORT}, data=conf
         )
     )
     return True
@@ -62,21 +66,24 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Bosch SHC from a config entry."""
-    from boschshcpy import SHCSession
-
     data = entry.data
 
     _LOGGER.debug("Connecting to Bosch Smart Home Controller API")
-    session = await hass.async_add_executor_job(SHCSession, data[CONF_IP_ADDRESS], data[CONF_SSL_CERTIFICATE], data[CONF_SSL_KEY])
+    session = await hass.async_add_executor_job(
+        SHCSession,
+        data[CONF_IP_ADDRESS],
+        data[CONF_SSL_CERTIFICATE],
+        data[CONF_SSL_KEY],
+    )
 
     shc_info = session.information
     if shc_info.version == "n/a":
         _LOGGER.error("Unable to connect to Bosch Smart Home Controller API")
         return False
-    elif shc_info.updateState.name == "UPDATE_AVAILABLE":
-        _LOGGER.warning('Please check for software updates in the Bosch Smart Home App')
+    if shc_info.updateState.name == "UPDATE_AVAILABLE":
+        _LOGGER.warning("Please check for software updates in the Bosch Smart Home App")
 
-    hass.data[DOMAIN][slugify(data[CONF_NAME])] = session
+    hass.data[DOMAIN][entry.entry_id] = session
 
     device_registry = await dr.async_get_registry(hass)
     device_registry.async_get_or_create(
@@ -85,7 +92,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         manufacturer="Bosch",
         name=data[CONF_NAME],
         model="SmartHomeController",
-        sw_version=shc_info.version
+        sw_version=shc_info.version,
     )
 
     for component in PLATFORMS:
@@ -111,21 +118,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    from boschshcpy import SHCSession
-
-    session: SHCSession = hass.data[DOMAIN][slugify(entry.data[CONF_NAME])]
+    session: SHCSession = hass.data[DOMAIN][entry.entry_id]
     await hass.async_add_executor_job(session.stop_polling)
 
     unload_ok = all(
         await asyncio.gather(
             *[
-                hass.config_entries.async_forward_entry_unload(
-                    entry, component)
+                hass.config_entries.async_forward_entry_unload(entry, component)
                 for component in PLATFORMS
             ]
         )
     )
     if unload_ok:
-        hass.data[DOMAIN].pop(slugify(entry.data[CONF_NAME]))
+        hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
